@@ -1,0 +1,43 @@
+import numpy as np
+
+# Wejścia x1 i x2 oraz oczekiwana wartość wyjścia y dla XOR
+X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+y = np.array([[0], [1], [1], [0]])
+
+
+# Definicja funkcji aktywacji (tangens hiperboliczny)
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+
+# Początkowe wartości wag
+w1 = np.random.rand(2, 4)
+w2 = np.random.rand(4, 1)
+
+# Ustawienie współczynnika uczenia i liczby iteracji
+learning_rate = 0.1
+epochs = 100000
+
+# Pętla ucząca sieć neuronową
+for i in range(epochs):
+    # Propagacja
+    hidden_layer = sigmoid(np.dot(X, w1))
+    output_layer = sigmoid(np.dot(hidden_layer, w2))
+
+    # Obliczenie błędu i jego gradientu
+    output_error = y - output_layer
+    output_delta = output_error * output_layer * (1 - output_layer)
+
+    hidden_error = output_delta.dot(w2.T)
+    hidden_delta = hidden_error * hidden_layer * (1 - hidden_layer)
+
+    # Aktualizacja wag
+    w2 += hidden_layer.T.dot(output_delta) * learning_rate
+    w1 += X.T.dot(hidden_delta) * learning_rate
+
+# Testowanie na nowych danych
+X_test = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+hidden_layer = sigmoid(np.dot(X_test, w1))
+output_layer = sigmoid(np.dot(hidden_layer, w2))
+
+print(output_layer)
