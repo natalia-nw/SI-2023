@@ -1,0 +1,74 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+# Tabela z danymi
+data = np.array([[2000, 6.5], [2002, 7.0], [2005, 7.4], [2007, 8.2], [2010, 9.0]])
+
+# Dzielenie danych na zmienne niezależne i zależną
+X = data[:, 0]
+y = data[:, 1]
+
+# Obliczanie wartości potrzebnych do regresji liniowej
+n = len(X)
+sum_x = np.sum(X)
+sum_y = np.sum(y)
+sum_xy = np.sum(X * y)
+sum_xx = np.sum(X ** 2)
+
+# Obliczanie współczynników regresji liniowej
+slope = (n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x ** 2)  # nachylenie
+intercept = (sum_y - slope * sum_x) / n  #
+
+# Przewidywanie procentu bezrobotnych w danym roku
+prediction = slope * 2012 + intercept
+
+# Zaokrąglenie wyniku do trzech miejsc po przecinku
+prediction = round(prediction, 3)
+
+# Wyświetlenie wyniku
+print(f'Przewidywany procent bezrobotnych w 2012 roku: {prediction}%')
+
+
+# Obliczanie roku, w którym procent przekroczy 12%
+year = (12 - intercept) / slope
+
+# Zaokrąglenie wyniku do najbliższej liczby całkowitej
+year = int(round(year, 0))
+
+# Wyświetlenie wyniku
+print(f'Procent bezrobotnych przekroczy 12% w roku: {year}')
+
+
+# Inicjalizacja wykresu
+fig, ax = plt.subplots()
+ax.set_xlim(min(X) - 1, max(X) + 1)
+ax.set_ylim(min(y) - 1, max(y) + 1)
+ax.set_xlabel('Year')
+ax.set_ylabel('Percentage')
+
+# Inicjalizacja lini regresji
+line, = ax.plot([], [])
+
+
+# Funkcja inicjalizująca animację
+def init():
+    line.set_data([], [])
+    return line,
+
+
+# Funkcja aktualizująca animację
+def update(frame):
+    x = X[:frame + 1]
+    Y = y[:frame + 1]
+    A = np.vstack([x, np.ones(len(x))]).T
+    m, b = np.linalg.lstsq(A, Y, rcond=None)[0]
+    line.set_data(x, m * x + b)
+    return line,
+
+
+# Tworzenie animacji
+ani = animation.FuncAnimation(fig, update, frames=len(X), init_func=init, blit=True, interval=500)
+
+# Wyświetlenie animacji
+plt.show()
