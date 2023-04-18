@@ -1,0 +1,48 @@
+import numpy as np
+
+
+# Funkcja aktywacji
+# zwraca 1, gdy argument jest > zero, a 0 gdy <=
+def step_function(x):
+    return np.where(x > 0, 1, 0)
+
+
+# Perceptron-Learn
+# iteracyjnie aktualizuje wagi i przesunięcie, aż osiągnie zbieżność
+def perceptron_learn(X, y, num_epochs=10, learning_rate=0.1):
+    num_samples, num_features = X.shape
+    weights = np.zeros(num_features)
+    bias = 0
+    for epoch in range(num_epochs):
+        for i in range(num_samples):
+            activation = np.dot(X[i], weights) + bias
+            output = step_function(activation)
+            error = y[i] - output
+            weights += learning_rate * error * X[i]
+            bias += learning_rate * error
+    return weights, bias
+
+
+# Funkcja logiczna AND
+X_and = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+y_and = np.array([0, 0, 0, 1])
+weights_and, bias_and = perceptron_learn(X_and, y_and)
+print("\nAND weights: ", weights_and)
+print("AND bias: ", bias_and)
+
+
+# Funkcja logiczna NOT
+X_not = np.array([[0], [1]])
+y_not = np.array([1, 0])
+weights_not, bias_not = perceptron_learn(X_not, y_not)
+print("\nNOT weights: ", weights_not)
+print("NOT bias: ", bias_not)
+
+
+# Funkcja boolowska x1 ∧ ¬x2
+X_bool = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+y_bool = np.array([0, 0, 1, 0])
+weights_bool, bias_bool = perceptron_learn(X_bool, y_bool)
+print("\nfun_bool weights: ", weights_bool)
+print("fun_bool bias: ", bias_bool)
+
